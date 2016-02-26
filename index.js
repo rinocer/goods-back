@@ -42,6 +42,19 @@ function listProject(event, context){
     });
 }
 
+function searchProject(event, context){
+  console.log('Search projects');
+  var searchText = event.query || 'givr';
+  models.Project.search(searchText, function(err, projects){
+    console.log(err, projects);
+    if(err){
+      console.error(err);
+      context.fail(err);
+    }
+    else context.succeed(projects);
+  });
+}
+
 function mainHandler(event, context) {
     //console.log('Received event:', JSON.stringify(event, null, 2));
     var operation = event.operation;
@@ -55,6 +68,7 @@ function mainHandler(event, context) {
         listProject(event, context);
         break;
       case 'search':
+        searchProject(event, context);
         break;
       case 'read':
         break;
@@ -65,5 +79,3 @@ function mainHandler(event, context) {
 };
 
 exports.handler = mainHandler;
-
-//mainHandler({operation:'list', distance:1, latitude:40.452178, longitude:-3.7265965},{});

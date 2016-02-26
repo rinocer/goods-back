@@ -1,6 +1,7 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    searchPlugin = require('mongoose-search-plugin');
 
-exports.Project = mongoose.model('Project', {
+var projectSchema = mongoose.Schema({
   name: String,
   description: String,
   initiator: String,
@@ -16,6 +17,11 @@ exports.Project = mongoose.model('Project', {
     givr: String
   }]
 });
+
+projectSchema.plugin(searchPlugin, {
+    fields: ['name', 'description', 'items']
+  });
+exports.Project = mongoose.model('Project', projectSchema);
 
 /*
 var project = new models.Project({

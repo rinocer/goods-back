@@ -121,4 +121,3 @@ function mainHandler(event, context) {
 };
 
 exports.handler = mainHandler;
-mainHandler({operation:'give', project:'56d0515adf4f6901007fa0ea', item:'56d0515adf4f6901007fa0ec'},{});

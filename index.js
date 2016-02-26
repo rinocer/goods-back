@@ -21,7 +21,7 @@ function createProject(event, context){
 function listProject(event, context){
   console.log('List projects');
 
-  var maxDistance = event.distance || 5;
+  var maxDistance = event.distance || 10;
   maxDistance /= 6371;
   var coords = [event.longitude || -3.9265965, event.latitude || 41.752178];
 
@@ -55,6 +55,45 @@ function searchProject(event, context){
   });
 }
 
+function readProject(event, context){
+  console.log('Read projects');
+  var requiredId = event.id || '';
+  models.Project.findById(requiredId, function(err, project){
+    console.log(err, project);
+    if(err){
+      console.error(err);
+      context.fail(err);
+    }
+    else context.succeed(project);
+  });
+}
+
+function joinProject(event, context){
+  console.log('Join projects');
+  var projectId = event.project || '';
+  var itemId = event.item || '';
+  var givr = event.givr || 'Anonymous';
+  console.log(projectId, itemId, givr);
+
+  models.Project.findOneAndUpdate(
+    { "_id": projectId,
+      "items._id": itemId },
+    { "$set":
+      {
+        "items.$.gived": true,
+        "items.$.givr": givr
+      }
+    },
+    function(err,project) {
+      console.log(project);
+      if(err){
+        console.error(err);
+        context.fail(err);
+      }
+      else context.succeed(project);
+    });
+}
+
 function mainHandler(event, context) {
     //console.log('Received event:', JSON.stringify(event, null, 2));
     var operation = event.operation;
@@ -71,11 +110,15 @@ function mainHandler(event, context) {
         searchProject(event, context);
         break;
       case 'read':
+        readProject(event, context);
         break;
-      case 'join':
+      case 'give':
+        joinProject(event, context);
+        break;
       default:
         context.fail(new Error('Unrecognized operation "' + operation + '"'));
     }
 };
 
 exports.handler = mainHandler;
+mainHandler({operation:'give', project:'56d0515adf4f6901007fa0ea', item:'56d0515adf4f6901007fa0ec'},{});
